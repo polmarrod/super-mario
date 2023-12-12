@@ -121,7 +121,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shroom, function on_on_overlap(s
         sprites.destroy(otherSprite2)
         info.changeScoreBy(100)
     } else {
-        deathMario()
+        actualizeHitMario()
     }
     
 })
@@ -393,13 +393,13 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_presse
         
         if (marioLevel.tileKindAt(TileDirection.Right, assets.tile`tube_right_top0 `)) {
             tiles.setCurrentTilemap(tilemap`level_1_0`)
-            tiles.placeOnTile(marioLevel, tiles.getTileLocation(166, 11))
+            tiles.placeOnTile(marioLevel, tiles.getTileLocation(166, 10))
         }
         
     }
     
 })
-function deathMario() {
+function actualizeHitMario() {
     
     if (tall == 1) {
         tall = 0
@@ -410,18 +410,39 @@ function deathMario() {
         }
         
     } else {
-        info.stopCountdown()
-        info.changeLifeBy(-1)
-        info.setScore(0)
-        info.changeCountdownBy(400 - info.countdown())
-        tiles.setCurrentTilemap(tilemap`level_1_0`)
-        tiles.placeOnTile(marioLevel, tiles.getTileLocation(0, 12))
+        animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
+        controller.moveSprite(marioLevel, 0, 0)
         sprites.destroyAllSpritesOfKind(SpriteKind.Shroom)
         sprites.destroyAllSpritesOfKind(SpriteKind.Turtle)
         sprites.destroyAllSpritesOfKind(SpriteKind.Shell)
-        spawnEnemies()
+        sprites.destroyAllSpritesOfKind(SpriteKind.Food)
+        marioLevel.setImage(assets.image`mario_death`)
+        marioLevel.vy = -100
+        marioLevel.ay = 400
+        tiles.setWallAt(tiles.getTileLocation(marioLevel.tilemapLocation().column, 14), false)
+        tiles.setWallAt(tiles.getTileLocation(marioLevel.tilemapLocation().column, 15), false)
+        tiles.setWallAt(tiles.getTileLocation(marioLevel.tilemapLocation().column + 1, 14), false)
+        tiles.setWallAt(tiles.getTileLocation(marioLevel.tilemapLocation().column + 1, 15), false)
+        tiles.setWallAt(tiles.getTileLocation(marioLevel.tilemapLocation().column - 1, 14), false)
+        tiles.setWallAt(tiles.getTileLocation(marioLevel.tilemapLocation().column - 1, 15), false)
     }
     
+}
+
+function deathMario() {
+    info.stopCountdown()
+    info.changeLifeBy(-1)
+    info.setScore(0)
+    info.changeCountdownBy(400 - info.countdown())
+    tiles.setCurrentTilemap(tilemap`level_1_0`)
+    tiles.placeOnTile(marioLevel, tiles.getTileLocation(0, 12))
+    sprites.destroyAllSpritesOfKind(SpriteKind.Shroom)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Turtle)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Shell)
+    marioLevel.vy = 0
+    marioLevel.ay = 350
+    controller.moveSprite(marioLevel, 100, 0)
+    spawnEnemies()
 }
 
 controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
@@ -470,7 +491,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Turtle, function on_on_overlap2(
         tiles.placeOnTile(shell, otherSprite22.tilemapLocation())
         shell.ay = 350
     } else {
-        deathMario()
+        actualizeHitMario()
     }
     
 })
@@ -674,7 +695,9 @@ game.onUpdate(function on_on_update2() {
     
 })
 function checkFall() {
+    
     if (marioLevel.tilemapLocation().row == 15) {
+        tall = 0
         deathMario()
     }
     

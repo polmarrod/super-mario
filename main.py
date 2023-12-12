@@ -113,7 +113,7 @@ def on_on_overlap(sprite3, otherSprite2):
         sprites.destroy(otherSprite2)
         info.change_score_by(100)
     else:
-        deathMario()
+        actualizeHitMario()
 sprites.on_overlap(SpriteKind.player, SpriteKind.Shroom, on_on_overlap)
 
 def on_down_pressed():
@@ -371,29 +371,48 @@ def on_right_pressed():
                     True)
         if marioLevel.tile_kind_at(TileDirection.RIGHT, assets.tile("""tube_right_top0 """)):
             tiles.set_current_tilemap(tilemap("""level_1_0"""))
-            tiles.place_on_tile(marioLevel, tiles.get_tile_location(166, 11))              
+            tiles.place_on_tile(marioLevel, tiles.get_tile_location(166, 10))              
 
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
-
-def deathMario():
+def actualizeHitMario():
     global tall
-    if tall == 1 : 
+    if tall == 1 :
         tall = 0
         if facingRight:
             marioLevel.set_image(assets.image("""mario_right"""))
         else:
             marioLevel.set_image(assets.image("""mario_left"""))
     else:
-        info.stop_countdown()
-        info.change_life_by(-1)
-        info.set_score(0)
-        info.change_countdown_by(400 - info.countdown())
-        tiles.set_current_tilemap(tilemap("""level_1_0"""))
-        tiles.place_on_tile(marioLevel, tiles.get_tile_location(0, 12))
+        animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
+        controller.move_sprite(marioLevel,0,0)
         sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
         sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
         sprites.destroy_all_sprites_of_kind(SpriteKind.Shell)
-        spawnEnemies()
+        sprites.destroy_all_sprites_of_kind(SpriteKind.food)
+        marioLevel.set_image(assets.image("""mario_death"""))
+        marioLevel.vy = -100
+        marioLevel.ay = 400
+        tiles.set_wall_at(tiles.get_tile_location(marioLevel.tilemap_location().column,14), False)
+        tiles.set_wall_at(tiles.get_tile_location(marioLevel.tilemap_location().column,15), False)
+        tiles.set_wall_at(tiles.get_tile_location(marioLevel.tilemap_location().column+1,14), False)
+        tiles.set_wall_at(tiles.get_tile_location(marioLevel.tilemap_location().column+1,15), False)
+        tiles.set_wall_at(tiles.get_tile_location(marioLevel.tilemap_location().column-1,14), False)
+        tiles.set_wall_at(tiles.get_tile_location(marioLevel.tilemap_location().column-1,15), False)
+            
+def deathMario():
+    info.stop_countdown()
+    info.change_life_by(-1)
+    info.set_score(0)
+    info.change_countdown_by(400 - info.countdown())
+    tiles.set_current_tilemap(tilemap("""level_1_0"""))
+    tiles.place_on_tile(marioLevel, tiles.get_tile_location(0, 12))
+    sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
+    sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
+    sprites.destroy_all_sprites_of_kind(SpriteKind.Shell)
+    marioLevel.vy = 0
+    marioLevel.ay = 350
+    controller.move_sprite(marioLevel,100,0)
+    spawnEnemies()
 
 def on_left_pressed():
     global facingRight
@@ -439,7 +458,7 @@ def on_on_overlap2(sprite22, otherSprite22):
         tiles.place_on_tile(shell, otherSprite22.tilemap_location())
         shell.ay = 350
     else:
-        deathMario()
+        actualizeHitMario()
 sprites.on_overlap(SpriteKind.player, SpriteKind.Turtle, on_on_overlap2)
 
 def on_a_pressed():
@@ -617,7 +636,9 @@ def on_on_update2():
                 """))
 game.on_update(on_on_update2)
 def checkFall():
+    global tall
     if marioLevel.tilemap_location().row == 15:
+        tall = 0
         deathMario()
     for value in sprites.all_of_kind(SpriteKind.Shroom):
         if value.tilemap_location().row == 15:
