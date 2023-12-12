@@ -387,6 +387,7 @@ function deathMario() {
     sprites.destroyAllSpritesOfKind(SpriteKind.Shroom)
     sprites.destroyAllSpritesOfKind(SpriteKind.Turtle)
     sprites.destroyAllSpritesOfKind(SpriteKind.Shell)
+    let tall = 0
     tiles.placeOnTile(marioLevel, tiles.getTileLocation(0, 13))
     spawnEnemies()
 }
@@ -457,7 +458,7 @@ function spawnEnemies() {
     for (let value of tiles.getTilesByType(assets.tile`
         myTile2
     `)) {
-        if (marioLevel.tilemapLocation().column + scene.screenWidth() > value.column) {
+        if (value.column - marioLevel.tilemapLocation().column < 6) {
             shroom = sprites.create(assets.image`
                 shroom_sprite0
             `, SpriteKind.Shroom)
@@ -509,7 +510,7 @@ function spawnEnemies() {
     for (let value2 of tiles.getTilesByType(assets.tile`
         myTile
     `)) {
-        if (marioLevel.tilemapLocation().column + scene.screenWidth() > value2.column) {
+        if (value2.column - marioLevel.tilemapLocation().column < 6) {
             turtle = sprites.create(assets.image`
                 turtle_sprite
             `, SpriteKind.Turtle)
@@ -564,6 +565,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function on_on_overlap4(sp
     
     sprites.destroy(otherSprite)
     tall = 1
+    tiles.placeOnTile(marioLevel, tiles.getTileLocation(marioLevel.tilemapLocation().column, marioLevel.tilemapLocation().row - 1))
 })
 game.onUpdate(function on_on_update() {
     let coin: Sprite;

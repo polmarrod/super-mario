@@ -370,6 +370,7 @@ def deathMario():
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shell)
+    tall = 0
     tiles.place_on_tile(marioLevel, tiles.get_tile_location(0, 13))
     spawnEnemies()
 
@@ -435,7 +436,7 @@ def spawnEnemies():
     for value in tiles.get_tiles_by_type(assets.tile("""
         myTile2
     """)):
-        if marioLevel.tilemap_location().column + scene.screen_width() > value.column:
+        if value.column - marioLevel.tilemap_location().column < 6:
             shroom = sprites.create(assets.image("""
                 shroom_sprite0
             """), SpriteKind.Shroom)
@@ -488,7 +489,7 @@ def spawnEnemies():
     for value2 in tiles.get_tiles_by_type(assets.tile("""
         myTile
     """)):
-        if marioLevel.tilemap_location().column + scene.screen_width() > value2.column:
+        if value2.column - marioLevel.tilemap_location().column < 6:
             turtle = sprites.create(assets.image("""
                 turtle_sprite
             """), SpriteKind.Turtle)
@@ -534,6 +535,9 @@ def on_on_overlap4(sprite4, otherSprite):
     global tall
     sprites.destroy(otherSprite)
     tall = 1
+    tiles.place_on_tile(marioLevel,
+            tiles.get_tile_location(marioLevel.tilemap_location().column,
+            marioLevel.tilemap_location().row - 1))
 sprites.on_overlap(SpriteKind.player, SpriteKind.food, on_on_overlap4)
 def on_on_update():
     global boost
