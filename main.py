@@ -8,12 +8,29 @@ class SpriteKind:
     Turtle = SpriteKind.create()
     Shell = SpriteKind.create()
 
-def on_up_pressed():
-    global selector
-    if selector == 1:
-        selector = 0
-        changePostionSelector(selector)
-controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
+def on_right_released():
+    animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
+    if tall:
+        marioLevel.set_image(assets.image("""
+            tall_mario_right0
+        """))
+    else:
+        marioLevel.set_image(assets.image("""
+            mario_right
+        """))
+controller.right.on_event(ControllerButtonEvent.RELEASED, on_right_released)
+
+def on_left_released():
+    animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
+    if tall:
+        marioLevel.set_image(assets.image("""
+            tall_mario_left
+        """))
+    else:
+        marioLevel.set_image(assets.image("""
+            mario_left
+        """))
+controller.left.on_event(ControllerButtonEvent.RELEASED, on_left_released)
 
 def on_on_destroyed(sprite2):
     global listCoinIndex
@@ -22,43 +39,22 @@ sprites.on_destroyed(SpriteKind.coinTwo, on_on_destroyed)
 
 def jumpAnimation():
     animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
-    if marioLevel.vx > 0:
-        marioLevel.set_image(img("""
-            . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . .
+    if tall:
+        if marioLevel.vx > 0:
+            marioLevel.set_image(assets.image("""
+                tall_mario_jump_right
+            """))
+        elif marioLevel.vx < 0:
+            marioLevel.set_image(assets.image("""
+                tall_mario_jump_left
+            """))
+    elif marioLevel.vx > 0:
+        marioLevel.set_image(assets.image("""
+            jump_right
         """))
     elif marioLevel.vx < 0:
-        marioLevel.set_image(img("""
-            . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . .
+        marioLevel.set_image(assets.image("""
+            jump_left
         """))
 def initializeMenu():
     global backgroundmenu, mario, title_onep, title_twop, selector_ig, selector, spriteCoinBrillante, spriteCoinOscura, listCoins, list2
@@ -102,6 +98,28 @@ def on_on_destroyed2(sprite):
     listCoinIndex = 1
 sprites.on_destroyed(SpriteKind.coinOne, on_on_destroyed2)
 
+def on_on_overlap(sprite3, otherSprite2):
+    if sprite3.x < otherSprite2.x:
+        otherSprite2.vx = 0
+        animation.stop_animation(animation.AnimationTypes.ALL, otherSprite2)
+        jump()
+        otherSprite2.set_image(assets.image("""
+            shroom_death
+        """))
+        pause(450)
+        sprites.destroy(otherSprite2)
+        info.change_score_by(100)
+    else:
+        deathMario()
+sprites.on_overlap(SpriteKind.player, SpriteKind.Shroom, on_on_overlap)
+
+def on_down_pressed():
+    global selector
+    if selector == 0:
+        selector = 1
+        changePostionSelector(selector)
+controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
+
 def buildCabecera():
     global scr, x, strTemp, y, strCoins, textScore, titleScore, titleCoins, listCoinIndex, titleTime, spriteCoinOscura, spriteCoinBrillante
     scr = convert_to_text(score)
@@ -143,20 +161,6 @@ def buildCabecera():
                 coin one
             """), SpriteKind.coinOne)
             colocateCoin(spriteCoinBrillante)
-
-def on_a_pressed():
-    global level
-    if level == 0 and selector == 0:
-        level = 1
-        startGame()
-        destroyMenu()
-    elif level != 0:
-        if marioLevel.vy == 0:
-            jump()
-    else:
-        pass
-controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
-
 def startGame():
     global marioLevel
     scene.on_hit_wall(SpriteKind.player, on_hit_wall)
@@ -166,7 +170,6 @@ def startGame():
         elif sprite6.is_hitting_tile(CollisionDirection.LEFT):
             sprite6.vx = 50
     scene.on_hit_wall(SpriteKind.food, on_hit_wall)
-    info.start_countdown(400)
     scene.set_background_image(img("""
         9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
                 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -290,31 +293,22 @@ def startGame():
                 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
     """))
     tiles.set_current_tilemap(tilemap("""
-        level2
+        level_1_0
     """))
-    marioLevel = sprites.create(img("""
-            . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . . 
-                    . . . . . . . . . . . . . . . .
-        """),
-        SpriteKind.player)
+    if tall:
+        marioLevel = sprites.create(assets.image("""
+                tall_mario_right0
+            """),
+            SpriteKind.player)
+    else:
+        marioLevel = sprites.create(assets.image("""
+            mario_right
+        """), SpriteKind.player)
     createPlayer(marioLevel)
     marioLevel.ay = 350
     info.set_life(3)
     info.set_score(0)
+    info.start_countdown(400)
 
 def on_hit_wall2(sprite5, location):
     if sprite5.is_hitting_tile(CollisionDirection.RIGHT):
@@ -323,30 +317,23 @@ def on_hit_wall2(sprite5, location):
         sprite5.vx = 50
 scene.on_hit_wall(SpriteKind.Shroom, on_hit_wall2)
 
-def on_left_pressed():
+def on_right_pressed():
     if marioLevel.vy == 0:
-        animation.run_image_animation(marioLevel,
-            [img("""
-                . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . .
-            """)],
-            150,
-            True)
-controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
+        if tall:
+            animation.run_image_animation(marioLevel,
+                            assets.animation("""
+                                tall_mario_walk_right
+                            """),
+                            150,
+                            True)
+        else:
+            animation.run_image_animation(marioLevel,
+                assets.animation("""
+                    mario_walk_right
+                """),
+                150,
+                True)
+controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
 def deathMario():
     info.stop_countdown()
@@ -354,120 +341,79 @@ def deathMario():
     info.set_score(0)
     info.change_countdown_by(400 - info.countdown())
     tiles.set_current_tilemap(tilemap("""
-        level1
+        nivel2
     """))
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shell)
     tiles.place_on_tile(marioLevel, tiles.get_tile_location(0, 13))
     spawnEnemies()
+
+def on_left_pressed():
+    if marioLevel.vy == 0:
+        if tall:
+            animation.run_image_animation(marioLevel,
+                assets.animation("""
+                    tall_mario_walk_left
+                """),
+                150,
+                True)
+        else:
+            animation.run_image_animation(marioLevel,
+                assets.animation("""
+                    mario_walk_left
+                """),
+                150,
+                True)
+controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
+
 def changePostionSelector(selection: number):
     selector_ig.set_position(list2[selection].x - 38, list2[selection].y + 1)
 def initializeGame():
-    global score, level, coins
+    global tall, score, level, coins
+    tall = 0
     score = 0
     level = 0
     coins = 0
 
-def on_right_released():
-    animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
-    marioLevel.set_image(img("""
-        . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . .
-    """))
-controller.right.on_event(ControllerButtonEvent.RELEASED, on_right_released)
+def on_on_overlap2(sprite22, otherSprite22):
+    global shell
+    if sprite22.x < otherSprite22.x:
+        otherSprite22.vx = 0
+        animation.stop_animation(animation.AnimationTypes.ALL, otherSprite22)
+        jump()
+        sprites.destroy(otherSprite22)
+        info.change_score_by(100)
+        shell = sprites.create(assets.image("""
+            shell_sprite
+        """), SpriteKind.Shell)
+        tiles.place_on_tile(shell, otherSprite22.tilemap_location())
+        shell.ay = 350
+    else:
+        deathMario()
+sprites.on_overlap(SpriteKind.player, SpriteKind.Turtle, on_on_overlap2)
 
-def on_left_released():
-    animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
-    marioLevel.set_image(img("""
-        . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . . 
-                . . . . . . . . . . . . . . . .
-    """))
-controller.left.on_event(ControllerButtonEvent.RELEASED, on_left_released)
-
-def on_on_overlap(sprite32, otherSprite3):
-    otherSprite3.vx = sprite32.vx * 2
-    otherSprite3.set_bounce_on_wall(True)
-sprites.on_overlap(SpriteKind.player, SpriteKind.Shell, on_on_overlap)
-
-def on_right_pressed():
-    if marioLevel.vy == 0:
-        animation.run_image_animation(marioLevel,
-            [img("""
-                . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . .
-            """)],
-            150,
-            True)
-controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
+def on_a_pressed():
+    global level
+    if level == 0 and selector == 0:
+        level = 1
+        startGame()
+        destroyMenu()
+    elif level != 0:
+        if marioLevel.vy == 0:
+            jump()
+controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def spawnEnemies():
     global shroom, turtle
+    game.splash("hy")
     for value in tiles.get_tiles_by_type(assets.tile("""
         myTile2
     """)):
         if marioLevel.tilemap_location().column + scene.screen_width() > value.column:
-            shroom = sprites.create(img("""
-                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . .
-                """),
-                SpriteKind.Shroom)
+            shroom = sprites.create(assets.image("""
+                shroom_sprite0
+            """), SpriteKind.Shroom)
             tiles.place_on_tile(shroom, value)
             tiles.set_tile_at(value, assets.tile("""
                 transparency16
@@ -518,70 +464,21 @@ def spawnEnemies():
         myTile
     """)):
         if marioLevel.tilemap_location().column + scene.screen_width() > value2.column:
-            turtle = sprites.create(img("""
-                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . .
-                """),
-                SpriteKind.Turtle)
+            turtle = sprites.create(assets.image("""
+                turtle_sprite
+            """), SpriteKind.Turtle)
             tiles.place_on_tile(turtle, value2)
             tiles.set_tile_at(value2, assets.tile("""
                 transparency16
             """))
             turtle.vx = -20
 
-def on_down_pressed():
+def on_up_pressed():
     global selector
-    if selector == 0:
-        selector = 1
+    if selector == 1:
+        selector = 0
         changePostionSelector(selector)
-controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
-
-def on_on_overlap2(sprite22, otherSprite22):
-    global shell
-    if sprite22.y < otherSprite22.top:
-        otherSprite22.vx = 0
-        animation.stop_animation(animation.AnimationTypes.ALL, otherSprite22)
-        jump()
-        sprites.destroy(otherSprite22)
-        info.change_score_by(100)
-        shell = sprites.create(img("""
-                . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . . 
-                            . . . . . . . . . . . . . . . .
-            """),
-            SpriteKind.Shell)
-        tiles.place_on_tile(shell, otherSprite22.tilemap_location())
-        shell.ay = 350
-    else:
-        deathMario()
-sprites.on_overlap(SpriteKind.player, SpriteKind.Turtle, on_on_overlap2)
+controller.up.on_event(ControllerButtonEvent.PRESSED, on_up_pressed)
 
 def on_life_zero():
     game.game_over(False)
@@ -599,47 +496,25 @@ def destroyMenu():
     sprites.destroy_all_sprites_of_kind(SpriteKind.game_option)
     sprites.destroy_all_sprites_of_kind(SpriteKind.coinTwo)
     sprites.destroy_all_sprites_of_kind(SpriteKind.coinOne)
+
+def on_on_overlap3(sprite32, otherSprite3):
+    otherSprite3.vx = sprite32.x * 2
+    otherSprite3.set_bounce_on_wall(True)
+sprites.on_overlap(SpriteKind.player, SpriteKind.Shell, on_on_overlap3)
+
 def colocateCoin(mySprite: Sprite):
     mySprite.set_position(65, 9)
 
-def on_on_overlap3(sprite3, otherSprite2):
-    if sprite3.y < otherSprite2.top:
-        otherSprite2.vx = 0
-        animation.stop_animation(animation.AnimationTypes.ALL, otherSprite2)
-        jump()
-        otherSprite2.set_image(img("""
-            . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . . 
-                        . . . . . . . . . . . . . . . .
-        """))
-        pause(450)
-        sprites.destroy(otherSprite2)
-        info.change_score_by(100)
-    else:
-        deathMario()
-sprites.on_overlap(SpriteKind.player, SpriteKind.Shroom, on_on_overlap3)
-
 def on_on_overlap4(sprite4, otherSprite):
+    global tall
     sprites.destroy(otherSprite)
+    tall = 1
 sprites.on_overlap(SpriteKind.player, SpriteKind.food, on_on_overlap4)
 
 boost: Sprite = None
-shell: Sprite = None
 turtle: Sprite = None
 shroom: Sprite = None
+shell: Sprite = None
 level = 0
 titleTime: TextSprite = None
 titleCoins: TextSprite = None
@@ -656,14 +531,15 @@ list2: List[Sprite] = []
 listCoins: List[Sprite] = []
 spriteCoinOscura: Sprite = None
 spriteCoinBrillante: Sprite = None
+selector = 0
 selector_ig: Sprite = None
 title_twop: Sprite = None
 title_onep: Sprite = None
 mario: Sprite = None
 backgroundmenu: Sprite = None
-marioLevel: Sprite = None
 listCoinIndex = 0
-selector = 0
+tall = 0
+marioLevel: Sprite = None
 initializeGame()
 initializeMenu()
 
@@ -682,25 +558,9 @@ def on_on_update():
         prize_block_boost
     """)):
         if marioLevel.tilemap_location().column == value222.column and marioLevel.tilemap_location().row == value222.row + 1:
-            boost = sprites.create(img("""
-                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . . 
-                                    . . . . . . . . . . . . . . . .
-                """),
-                SpriteKind.food)
+            boost = sprites.create(assets.image("""
+                boost_sprite
+            """), SpriteKind.food)
             tiles.place_on_tile(boost,
                 tiles.get_tile_location(value222.column, value222.row - 1))
             boost.vx = 50
