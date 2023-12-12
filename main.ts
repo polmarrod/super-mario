@@ -104,7 +104,7 @@ sprites.onDestroyed(SpriteKind.coinOne, function on_on_destroyed2(sprite: Sprite
     listCoinIndex = 1
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Shroom, function on_on_overlap(sprite3: Sprite, otherSprite2: Sprite) {
-    if (sprite3.x < otherSprite2.x) {
+    if (sprite3.y < otherSprite2.top) {
         otherSprite2.vx = 0
         animation.stopAnimation(animation.AnimationTypes.All, otherSprite2)
         jump()
@@ -175,19 +175,19 @@ function buildCabecera() {
     }
 }
 
-function startGame() {
-    
-    scene.onHitWall(SpriteKind.Player, on_hit_wall)
-    function on_hit_wall(sprite6: Sprite, location2: tiles.Location) {
-        if (sprite6.isHittingTile(CollisionDirection.Right)) {
-            sprite6.vx = -50
-        } else if (sprite6.isHittingTile(CollisionDirection.Left)) {
-            sprite6.vx = 50
-        }
-        
+scene.onHitWall(SpriteKind.Player, on_hit_wall)
+function on_hit_wall(sprite6: Sprite, location2: tiles.Location) {
+    if (sprite6.isHittingTile(CollisionDirection.Right)) {
+        sprite6.vx = -50
+    } else if (sprite6.isHittingTile(CollisionDirection.Left)) {
+        sprite6.vx = 50
     }
     
-    scene.onHitWall(SpriteKind.Food, on_hit_wall)
+}
+
+scene.onHitWall(SpriteKind.Food, on_hit_wall)
+function startGame() {
+    
     scene.setBackgroundImage(img`
         9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
                 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -397,7 +397,7 @@ function initializeGame() {
 
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Turtle, function on_on_overlap2(sprite22: Sprite, otherSprite22: Sprite) {
     
-    if (sprite22.x < otherSprite22.x) {
+    if (sprite22.y < otherSprite22.top) {
         otherSprite22.vx = 0
         animation.stopAnimation(animation.AnimationTypes.All, otherSprite22)
         jump()
@@ -429,7 +429,6 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function on_a_pressed() {
 })
 function spawnEnemies() {
     
-    game.splash("hy")
     for (let value of tiles.getTilesByType(assets.tile`
         myTile2
     `)) {
@@ -541,6 +540,40 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function on_on_overlap4(sp
     sprites.destroy(otherSprite)
     tall = 1
 })
+game.onUpdate(function on_on_update() {
+    
+    if (level != 0) {
+        spawnEnemies()
+        for (let value22 of tiles.getTilesByType(assets.tile`
+            prize_block
+        `)) {
+            if (marioLevel.tilemapLocation().column == value22.column && marioLevel.tilemapLocation().row == value22.row + 1) {
+                info.changeScoreBy(10)
+                tiles.setTileAt(value22, assets.tile`
+                    myTile1
+                `)
+            }
+            
+        }
+        for (let value222 of tiles.getTilesByType(assets.tile`
+            prize_block_boost
+        `)) {
+            if (marioLevel.tilemapLocation().column == value222.column && marioLevel.tilemapLocation().row == value222.row + 1) {
+                boost = sprites.create(assets.image`
+                    boost_sprite
+                `, SpriteKind.Food)
+                tiles.placeOnTile(boost, tiles.getTileLocation(value222.column, value222.row - 1))
+                boost.vx = 50
+                boost.ay = 160
+                tiles.setTileAt(value222, assets.tile`
+                    myTile1
+                `)
+            }
+            
+        }
+    }
+    
+})
 let boost : Sprite = null
 let turtle : Sprite = null
 let shroom : Sprite = null
@@ -572,34 +605,3 @@ let tall = 0
 let marioLevel : Sprite = null
 initializeGame()
 initializeMenu()
-game.onUpdate(function on_on_update() {
-    
-    spawnEnemies()
-    for (let value22 of tiles.getTilesByType(assets.tile`
-        prize_block
-    `)) {
-        if (marioLevel.tilemapLocation().column == value22.column && marioLevel.tilemapLocation().row == value22.row + 1) {
-            info.changeScoreBy(10)
-            tiles.setTileAt(value22, assets.tile`
-                myTile1
-            `)
-        }
-        
-    }
-    for (let value222 of tiles.getTilesByType(assets.tile`
-        prize_block_boost
-    `)) {
-        if (marioLevel.tilemapLocation().column == value222.column && marioLevel.tilemapLocation().row == value222.row + 1) {
-            boost = sprites.create(assets.image`
-                boost_sprite
-            `, SpriteKind.Food)
-            tiles.placeOnTile(boost, tiles.getTileLocation(value222.column, value222.row - 1))
-            boost.vx = 50
-            boost.ay = 160
-            tiles.setTileAt(value222, assets.tile`
-                myTile1
-            `)
-        }
-        
-    }
-})

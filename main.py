@@ -99,7 +99,7 @@ def on_on_destroyed2(sprite):
 sprites.on_destroyed(SpriteKind.coinOne, on_on_destroyed2)
 
 def on_on_overlap(sprite3, otherSprite2):
-    if sprite3.x < otherSprite2.x:
+    if sprite3.y < otherSprite2.top:
         otherSprite2.vx = 0
         animation.stop_animation(animation.AnimationTypes.ALL, otherSprite2)
         jump()
@@ -161,15 +161,16 @@ def buildCabecera():
                 coin one
             """), SpriteKind.coinOne)
             colocateCoin(spriteCoinBrillante)
+scene.on_hit_wall(SpriteKind.player, on_hit_wall)
+def on_hit_wall(sprite6: Sprite, location2: tiles.Location):
+    if sprite6.is_hitting_tile(CollisionDirection.RIGHT):
+        sprite6.vx = -50
+    elif sprite6.is_hitting_tile(CollisionDirection.LEFT):
+        sprite6.vx = 50
+scene.on_hit_wall(SpriteKind.food, on_hit_wall)
 def startGame():
     global marioLevel
-    scene.on_hit_wall(SpriteKind.player, on_hit_wall)
-    def on_hit_wall(sprite6: Sprite, location2: tiles.Location):
-        if sprite6.is_hitting_tile(CollisionDirection.RIGHT):
-            sprite6.vx = -50
-        elif sprite6.is_hitting_tile(CollisionDirection.LEFT):
-            sprite6.vx = 50
-    scene.on_hit_wall(SpriteKind.food, on_hit_wall)
+
     scene.set_background_image(img("""
         9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
                 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -378,7 +379,7 @@ def initializeGame():
 
 def on_on_overlap2(sprite22, otherSprite22):
     global shell
-    if sprite22.x < otherSprite22.x:
+    if sprite22.y < otherSprite22.top:
         otherSprite22.vx = 0
         animation.stop_animation(animation.AnimationTypes.ALL, otherSprite22)
         jump()
@@ -406,7 +407,6 @@ controller.A.on_event(ControllerButtonEvent.PRESSED, on_a_pressed)
 
 def spawnEnemies():
     global shroom, turtle
-    game.splash("hy")
     for value in tiles.get_tiles_by_type(assets.tile("""
         myTile2
     """)):
@@ -510,7 +510,33 @@ def on_on_overlap4(sprite4, otherSprite):
     sprites.destroy(otherSprite)
     tall = 1
 sprites.on_overlap(SpriteKind.player, SpriteKind.food, on_on_overlap4)
-
+def on_on_update():
+    global boost
+    if level != 0:
+        spawnEnemies()
+        for value22 in tiles.get_tiles_by_type(assets.tile("""
+            prize_block
+        """)):
+            if marioLevel.tilemap_location().column == value22.column and marioLevel.tilemap_location().row == value22.row + 1:
+                info.change_score_by(10)
+                tiles.set_tile_at(value22, assets.tile("""
+                    myTile1
+                """))
+        for value222 in tiles.get_tiles_by_type(assets.tile("""
+            prize_block_boost
+        """)):
+            if marioLevel.tilemap_location().column == value222.column and marioLevel.tilemap_location().row == value222.row + 1:
+                boost = sprites.create(assets.image("""
+                    boost_sprite
+                """), SpriteKind.food)
+                tiles.place_on_tile(boost,
+                    tiles.get_tile_location(value222.column, value222.row - 1))
+                boost.vx = 50
+                boost.ay = 160
+                tiles.set_tile_at(value222, assets.tile("""
+                    myTile1
+                """))
+game.on_update(on_on_update)
 boost: Sprite = None
 turtle: Sprite = None
 shroom: Sprite = None
@@ -542,30 +568,3 @@ tall = 0
 marioLevel: Sprite = None
 initializeGame()
 initializeMenu()
-
-def on_on_update():
-    global boost
-    spawnEnemies()
-    for value22 in tiles.get_tiles_by_type(assets.tile("""
-        prize_block
-    """)):
-        if marioLevel.tilemap_location().column == value22.column and marioLevel.tilemap_location().row == value22.row + 1:
-            info.change_score_by(10)
-            tiles.set_tile_at(value22, assets.tile("""
-                myTile1
-            """))
-    for value222 in tiles.get_tiles_by_type(assets.tile("""
-        prize_block_boost
-    """)):
-        if marioLevel.tilemap_location().column == value222.column and marioLevel.tilemap_location().row == value222.row + 1:
-            boost = sprites.create(assets.image("""
-                boost_sprite
-            """), SpriteKind.food)
-            tiles.place_on_tile(boost,
-                tiles.get_tile_location(value222.column, value222.row - 1))
-            boost.vx = 50
-            boost.ay = 160
-            tiles.set_tile_at(value222, assets.tile("""
-                myTile1
-            """))
-game.on_update(on_on_update)
