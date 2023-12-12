@@ -1,33 +1,33 @@
- 
+# Super Mario Bros MakeCode Arcade  
+  Bienvenido al repositorio del proyecto Super Mario Bros desarrollado por Pol Martínez y Margaux Boileau utilizando 
+  MakeCode Arcade. Este juego es una recreación del primer nivel del clásico Super Mario Bros.
 
+## Instrucciones de Juego
+  Para disfrutar de esta emocionante aventura de Super Mario Bros en MakeCode Arcade, sigue estos sencillos pasos:
 
-> Open this page at [https://polmarrod.github.io/super-mario/](https://polmarrod.github.io/super-mario/)
+## Clonar el Repositorio:
+  git clone https://github.com/polmarrod/super-mario
 
-## Use as Extension
+## Abrir el Proyecto en MakeCode Arcade:
+  Ingresa a MakeCode Arcade.
+  Haz clic en "Importar" y selecciona "Importar URL".
+  Copia y pega la URL del repositorio clonado.
 
-This repository can be added as an **extension** in MakeCode.
+## Seleccionar el Modo de Juego:
+  Una vez que hayas cargado el proyecto en MakeCode Arcade, utiliza el editor para navegar al código.
+  Encuentra la sección que maneja el menú y la selección de jugadores.
+  Elige la opción de 1 jugador pulsando la tecla A.
 
-* open [https://arcade.makecode.com/](https://arcade.makecode.com/)
-* click on **New Project**
-* click on **Extensions** under the gearwheel menu
-* search for **https://github.com/polmarrod/super-mario** and import
+## ¡Juega!
+  Usa las teclas de dirección para mover a Mario.
+  Salta sobre los enemigos y obstáculos para llegar al final del nivel.
 
-## Edit this project ![Build status badge](https://github.com/polmarrod/super-mario/workflows/MakeCode/badge.svg)
+## Colaboradores
+* Pol Martínez
+* Margaux Boileau
 
-To edit this repository in MakeCode.
+## Licencia
+  Este proyecto está bajo la licencia [MIT](LICENSE), lo que significa que puedes utilizar, modificar y distribuir el código   según tus necesidades.
 
-* open [https://arcade.makecode.com/](https://arcade.makecode.com/)
-* click on **Import** then click on **Import URL**
-* paste **https://github.com/polmarrod/super-mario** and click import
-
-## Blocks preview
-
-This image shows the blocks code from the last commit in master.
-This image may take a few minutes to refresh.
-
-![A rendered view of the blocks](https://github.com/polmarrod/super-mario/raw/master/.github/makecode/blocks.png)
-
-#### Metadata (used for search, rendering)
-
-* for PXT/arcade
-<script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
+## Agradecimientos
+  Agradecemos a Nintendo por inspirarnos con el clásico Super Mario Bros y a MakeCode por proporcionar una plataforma divertida y educativa para la creación de juegos.
