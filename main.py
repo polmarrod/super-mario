@@ -341,9 +341,7 @@ def deathMario():
     info.change_life_by(-1)
     info.set_score(0)
     info.change_countdown_by(400 - info.countdown())
-    tiles.set_current_tilemap(tilemap("""
-        nivel2
-    """))
+    tiles.set_current_tilemap(tilemap("""level_1_0"""))
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shell)

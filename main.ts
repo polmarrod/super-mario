@@ -358,9 +358,7 @@ function deathMario() {
     info.changeLifeBy(-1)
     info.setScore(0)
     info.changeCountdownBy(400 - info.countdown())
-    tiles.setCurrentTilemap(tilemap`
-        nivel2
-    `)
+    tiles.setCurrentTilemap(tilemap`level_1_0`)
     sprites.destroyAllSpritesOfKind(SpriteKind.Shroom)
     sprites.destroyAllSpritesOfKind(SpriteKind.Turtle)
     sprites.destroyAllSpritesOfKind(SpriteKind.Shell)
