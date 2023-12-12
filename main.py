@@ -40,22 +40,23 @@ sprites.on_destroyed(SpriteKind.coinTwo, on_on_destroyed)
 def jumpAnimation():
     animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
     if tall:
-        if marioLevel.vx > 0:
+        if facingRight:
             marioLevel.set_image(assets.image("""
                 tall_mario_jump_right
             """))
-        elif marioLevel.vx < 0:
+        else:
             marioLevel.set_image(assets.image("""
                 tall_mario_jump_left
             """))
-    elif marioLevel.vx > 0:
-        marioLevel.set_image(assets.image("""
-            jump_right
-        """))
-    elif marioLevel.vx < 0:
-        marioLevel.set_image(assets.image("""
-            jump_left
-        """))
+    else:
+        if facingRight:
+            marioLevel.set_image(assets.image("""
+                jump_right
+            """))
+        else:
+            marioLevel.set_image(assets.image("""
+                jump_left
+            """))
 def initializeMenu():
     global backgroundmenu, mario, title_onep, title_twop, selector_ig, selector, spriteCoinBrillante, spriteCoinOscura, listCoins, list2
     backgroundmenu = sprites.create(assets.image("""
@@ -319,6 +320,8 @@ def on_hit_wall2(sprite5, location):
 scene.on_hit_wall(SpriteKind.Shroom, on_hit_wall2)
 
 def on_right_pressed():
+    global facingRight
+    facingRight = 1
     if marioLevel.vy == 0:
         if tall:
             animation.run_image_animation(marioLevel,
@@ -349,6 +352,8 @@ def deathMario():
     spawnEnemies()
 
 def on_left_pressed():
+    global facingRight
+    facingRight = 0
     if marioLevel.vy == 0:
         if tall:
             animation.run_image_animation(marioLevel,
@@ -535,6 +540,27 @@ def on_on_update():
                     myTile1
                 """))
 game.on_update(on_on_update)
+def on_on_update2():
+    if level != 0:
+        if marioLevel.vx == 0 and marioLevel.vy == 0:
+            if tall:
+                if facingRight:
+                    marioLevel.set_image(assets.image("""
+                        tall_mario_right0
+                    """))
+                else:
+                    marioLevel.set_image(assets.image("""
+                        tall_mario_left
+                    """))
+            elif facingRight:
+                marioLevel.set_image(assets.image("""
+                    mario_right
+                """))
+            else:
+                marioLevel.set_image(assets.image("""
+                    mario_left
+                """))
+game.on_update(on_on_update2)
 boost: Sprite = None
 turtle: Sprite = None
 shroom: Sprite = None
@@ -563,6 +589,7 @@ mario: Sprite = None
 backgroundmenu: Sprite = None
 listCoinIndex = 0
 tall = 0
+facingRight = 1
 marioLevel: Sprite = None
 initializeGame()
 initializeMenu()

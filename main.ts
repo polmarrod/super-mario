@@ -41,24 +41,24 @@ sprites.onDestroyed(SpriteKind.coinTwo, function on_on_destroyed(sprite2: Sprite
 function jumpAnimation() {
     animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
     if (tall) {
-        if (marioLevel.vx > 0) {
+        if (facingRight) {
             marioLevel.setImage(assets.image`
                 tall_mario_jump_right
             `)
-        } else if (marioLevel.vx < 0) {
+        } else {
             marioLevel.setImage(assets.image`
                 tall_mario_jump_left
             `)
         }
         
-    } else if (marioLevel.vx > 0) {
+    } else if (facingRight) {
         marioLevel.setImage(assets.image`
-            jump_right
-        `)
-    } else if (marioLevel.vx < 0) {
+                jump_right
+            `)
+    } else {
         marioLevel.setImage(assets.image`
-            jump_left
-        `)
+                jump_left
+            `)
     }
     
 }
@@ -339,6 +339,8 @@ scene.onHitWall(SpriteKind.Shroom, function on_hit_wall2(sprite5: Sprite, locati
     
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
+    
+    facingRight = 1
     if (marioLevel.vy == 0) {
         if (tall) {
             animation.runImageAnimation(marioLevel, assets.animation`
@@ -367,6 +369,8 @@ function deathMario() {
 }
 
 controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
+    
+    facingRight = 0
     if (marioLevel.vy == 0) {
         if (tall) {
             animation.runImageAnimation(marioLevel, assets.animation`
@@ -572,6 +576,35 @@ game.onUpdate(function on_on_update() {
     }
     
 })
+game.onUpdate(function on_on_update2() {
+    if (level != 0) {
+        if (marioLevel.vx == 0 && marioLevel.vy == 0) {
+            if (tall) {
+                if (facingRight) {
+                    marioLevel.setImage(assets.image`
+                        tall_mario_right0
+                    `)
+                } else {
+                    marioLevel.setImage(assets.image`
+                        tall_mario_left
+                    `)
+                }
+                
+            } else if (facingRight) {
+                marioLevel.setImage(assets.image`
+                    mario_right
+                `)
+            } else {
+                marioLevel.setImage(assets.image`
+                    mario_left
+                `)
+            }
+            
+        }
+        
+    }
+    
+})
 let boost : Sprite = null
 let turtle : Sprite = null
 let shroom : Sprite = null
@@ -600,6 +633,7 @@ let mario : Sprite = null
 let backgroundmenu : Sprite = null
 let listCoinIndex = 0
 let tall = 0
+let facingRight = 1
 let marioLevel : Sprite = null
 initializeGame()
 initializeMenu()
