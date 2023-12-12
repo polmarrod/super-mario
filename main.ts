@@ -578,6 +578,7 @@ game.onUpdate(function on_on_update() {
 })
 game.onUpdate(function on_on_update2() {
     if (level != 0) {
+        checkFall()
         if (marioLevel.vx == 0 && marioLevel.vy == 0) {
             if (tall) {
                 if (facingRight) {
@@ -605,6 +606,37 @@ game.onUpdate(function on_on_update2() {
     }
     
 })
+function checkFall() {
+    if (marioLevel.tilemapLocation().row == 15) {
+        deathMario()
+    }
+    
+    for (let value of sprites.allOfKind(SpriteKind.Shroom)) {
+        if (value.tilemapLocation().row == 15) {
+            sprites.destroy(value)
+        }
+        
+    }
+    for (let value2 of sprites.allOfKind(SpriteKind.Turtle)) {
+        if (value2.tilemapLocation().row == 15) {
+            sprites.destroy(value2)
+        }
+        
+    }
+    for (let value3 of sprites.allOfKind(SpriteKind.Food)) {
+        if (value3.tilemapLocation().row == 15) {
+            sprites.destroy(value3)
+        }
+        
+    }
+    for (let value4 of sprites.allOfKind(SpriteKind.Shell)) {
+        if (value4.tilemapLocation().row == 15) {
+            sprites.destroy(value4)
+        }
+        
+    }
+}
+
 let boost : Sprite = null
 let turtle : Sprite = null
 let shroom : Sprite = null

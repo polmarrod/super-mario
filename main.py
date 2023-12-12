@@ -542,6 +542,7 @@ def on_on_update():
 game.on_update(on_on_update)
 def on_on_update2():
     if level != 0:
+        checkFall()
         if marioLevel.vx == 0 and marioLevel.vy == 0:
             if tall:
                 if facingRight:
@@ -561,6 +562,22 @@ def on_on_update2():
                     mario_left
                 """))
 game.on_update(on_on_update2)
+def checkFall():
+    if marioLevel.tilemap_location().row == 15:
+        deathMario()
+    for value in sprites.all_of_kind(SpriteKind.Shroom):
+        if value.tilemap_location().row == 15:
+            sprites.destroy(value)
+    for value2 in sprites.all_of_kind(SpriteKind.Turtle):
+        if value2.tilemap_location().row == 15:
+            sprites.destroy(value2)
+    for value3 in sprites.all_of_kind(SpriteKind.Food):
+        if value3.tilemap_location().row == 15:
+            sprites.destroy(value3)
+    for value4 in sprites.all_of_kind(SpriteKind.Shell):
+        if value4.tilemap_location().row == 15:
+            sprites.destroy(value4)
+    
 boost: Sprite = None
 turtle: Sprite = None
 shroom: Sprite = None
