@@ -313,6 +313,19 @@ def startGame():
     info.set_life(3)
     info.set_score(0)
     info.start_countdown(400)
+    for value in tiles.get_tiles_by_type(assets.tile("""
+        prize_block
+    """)):
+        prize = sprites.create(assets.image("""
+            prize_block_0
+        """), SpriteKind.Prize)
+        tiles.place_on_tile(prize, value)
+        animation.run_image_animation(prize,
+            assets.animation("""
+                prize_block_anim
+            """),
+            200,
+            True)
 
 def on_hit_wall2(sprite5, location):
     if sprite5.is_hitting_tile(CollisionDirection.RIGHT):
@@ -519,20 +532,18 @@ def on_on_update():
     global boost
     if level != 0:
         spawnEnemies()
-        for value22 in tiles.get_tiles_by_type(assets.tile("""
-            prize_block
-        """)):
-            
-            if marioLevel.tilemap_location().column == value22.column and marioLevel.tilemap_location().row == value22.row + 1:
+        for value in sprites.all_of_kind(SpriteKind.Prize):
+            if marioLevel.tilemap_location().column == value.tilemap_location().column and marioLevel.tilemap_location().row == value.tilemap_location().row + 1:
                 coin = sprites.create(assets.image("""
-                        coin_sprite
-                    """), SpriteKind.Coin)
-                tiles.place_on_tile(coin, value22)
+                    coin_sprite
+                """), SpriteKind.Coin)
+                tiles.place_on_tile(coin, value.tilemap_location())
                 coin.vy = -200
                 coin.ay = 400
                 info.change_score_by(10)
-                
-                tiles.set_tile_at(value22, assets.tile("""
+                animation.stop_animation(animation.AnimationTypes.ALL, value)
+                sprites.destroy(value)
+                tiles.set_tile_at(value.tilemap_location(), assets.tile("""
                     myTile1
                 """))
         for value222 in tiles.get_tiles_by_type(assets.tile("""

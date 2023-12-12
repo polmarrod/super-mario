@@ -189,6 +189,7 @@ function on_hit_wall(sprite6: Sprite, location2: tiles.Location) {
 
 scene.onHitWall(SpriteKind.Food, on_hit_wall)
 function startGame() {
+    let prize: Sprite;
     
     scene.setBackgroundImage(img`
         9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -330,6 +331,17 @@ function startGame() {
     info.setLife(3)
     info.setScore(0)
     info.startCountdown(400)
+    for (let value of tiles.getTilesByType(assets.tile`
+        prize_block
+    `)) {
+        prize = sprites.create(assets.image`
+            prize_block_0
+        `, SpriteKind.Prize)
+        tiles.placeOnTile(prize, value)
+        animation.runImageAnimation(prize, assets.animation`
+                prize_block_anim
+            `, 200, true)
+    }
 }
 
 scene.onHitWall(SpriteKind.Shroom, function on_hit_wall2(sprite5: Sprite, location: tiles.Location) {
@@ -549,18 +561,18 @@ game.onUpdate(function on_on_update() {
     
     if (level != 0) {
         spawnEnemies()
-        for (let value22 of tiles.getTilesByType(assets.tile`
-            prize_block
-        `)) {
-            if (marioLevel.tilemapLocation().column == value22.column && marioLevel.tilemapLocation().row == value22.row + 1) {
+        for (let value of sprites.allOfKind(SpriteKind.Prize)) {
+            if (marioLevel.tilemapLocation().column == value.tilemapLocation().column && marioLevel.tilemapLocation().row == value.tilemapLocation().row + 1) {
                 coin = sprites.create(assets.image`
-                        coin_sprite
-                    `, SpriteKind.Coin)
-                tiles.placeOnTile(coin, value22)
+                    coin_sprite
+                `, SpriteKind.Coin)
+                tiles.placeOnTile(coin, value.tilemapLocation())
                 coin.vy = -200
                 coin.ay = 400
                 info.changeScoreBy(10)
-                tiles.setTileAt(value22, assets.tile`
+                animation.stopAnimation(animation.AnimationTypes.All, value)
+                sprites.destroy(value)
+                tiles.setTileAt(value.tilemapLocation(), assets.tile`
                     myTile1
                 `)
             }
