@@ -11,25 +11,27 @@ class SpriteKind:
     Prize = SpriteKind.create()
 
 def on_right_released():
-    animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
-    if tall:
-        marioLevel.set_image(assets.image("""tall_mario_right0"""))
-    else:
-        marioLevel.set_image(assets.image("""
-            mario_right
-        """))
+    if level != 0 :
+        animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
+        if tall:
+            marioLevel.set_image(assets.image("""tall_mario_right0"""))
+        else:
+            marioLevel.set_image(assets.image("""
+                mario_right
+            """))
 controller.right.on_event(ControllerButtonEvent.RELEASED, on_right_released)
 
 def on_left_released():
-    animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
-    if tall:
-        marioLevel.set_image(assets.image("""
-            tall_mario_left
-        """))
-    else:
-        marioLevel.set_image(assets.image("""
-            mario_left
-        """))
+    if level != 0 :
+        animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
+        if tall:
+            marioLevel.set_image(assets.image("""
+                tall_mario_left
+            """))
+        else:
+            marioLevel.set_image(assets.image("""
+                mario_left
+            """))
 controller.left.on_event(ControllerButtonEvent.RELEASED, on_left_released)
 
 def on_on_destroyed(sprite2):
@@ -124,6 +126,17 @@ def on_down_pressed():
         if marioLevel.tilemap_location().column == 58 or marioLevel.tilemap_location().column == 59 and marioLevel.tilemap_location().row == 9 or marioLevel.tilemap_location().row == 10 :
             tiles.set_current_tilemap(tilemap("""nivel"""))
             tiles.place_on_tile(marioLevel, tiles.get_tile_location(2, 0))
+            for value in tiles.get_tiles_by_type(assets.tile("""
+                    coin_block
+                """)):  
+                coin = sprites.create(assets.image("""
+                coin_sprite
+                """), SpriteKind.Coin)
+                tiles.place_on_tile(coin, value)
+                tiles.set_tile_at(value, assets.tile("""
+                    transparency16
+                """))
+                        
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
 def buildCabecera():
@@ -339,59 +352,68 @@ scene.on_hit_wall(SpriteKind.Shroom, on_hit_wall2)
 
 def on_right_pressed():
     global facingRight
-    facingRight = 1
-    if marioLevel.vy == 0:
-        if tall:
-            animation.run_image_animation(marioLevel,
-                            assets.animation("""
-                                tall_mario_walk_right
-                            """),
-                            150,
-                            True)
-        else:
-            animation.run_image_animation(marioLevel,
-                assets.animation("""
-                    mario_walk_right
-                """),
-                150,
-                True)
-    if marioLevel.tile_kind_at(TileDirection.RIGHT, assets.tile("""tube_right_top0 """)):
-        tiles.set_current_tilemap(tilemap("""level_1_0"""))
-        tiles.place_on_tile(marioLevel, tiles.get_tile_location(166, 11))              
+    if level != 0:
+        facingRight = 1
+        if marioLevel.vy == 0:
+            if tall:
+                animation.run_image_animation(marioLevel,
+                                assets.animation("""
+                                    tall_mario_walk_right
+                                """),
+                                150,
+                                True)
+            else:
+                animation.run_image_animation(marioLevel,
+                    assets.animation("""
+                        mario_walk_right
+                    """),
+                    150,
+                    True)
+        if marioLevel.tile_kind_at(TileDirection.RIGHT, assets.tile("""tube_right_top0 """)):
+            tiles.set_current_tilemap(tilemap("""level_1_0"""))
+            tiles.place_on_tile(marioLevel, tiles.get_tile_location(166, 11))              
 
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
 def deathMario():
-    info.stop_countdown()
-    info.change_life_by(-1)
-    info.set_score(0)
-    info.change_countdown_by(400 - info.countdown())
-    tiles.set_current_tilemap(tilemap("""level_1_0"""))
-    sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
-    sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
-    sprites.destroy_all_sprites_of_kind(SpriteKind.Shell)
-    tall = 0
-    tiles.place_on_tile(marioLevel, tiles.get_tile_location(0, 13))
-    spawnEnemies()
+    global tall
+    if tall == 1 : 
+        tall = 0
+        if facingRight:
+            marioLevel.set_image(assets.image("""mario_right"""))
+        else:
+            marioLevel.set_image(assets.image("""mario_left"""))
+    else:
+        info.stop_countdown()
+        info.change_life_by(-1)
+        info.set_score(0)
+        info.change_countdown_by(400 - info.countdown())
+        tiles.set_current_tilemap(tilemap("""level_1_0"""))
+        tiles.place_on_tile(marioLevel, tiles.get_tile_location(0, 12))
+        sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
+        sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
+        sprites.destroy_all_sprites_of_kind(SpriteKind.Shell)
+        spawnEnemies()
 
 def on_left_pressed():
     global facingRight
-    facingRight = 0
-    if marioLevel.vy == 0:
-        if tall:
-            animation.run_image_animation(marioLevel,
-                assets.animation("""
-                    tall_mario_walk_left
-                """),
-                150,
-                True)
-        else:
-            animation.run_image_animation(marioLevel,
-                assets.animation("""
-                    mario_walk_left
-                """),
-                150,
-                True)
+    if level == 1 : 
+        facingRight = 0
+        if marioLevel.vy == 0:
+            if tall:
+                animation.run_image_animation(marioLevel,
+                    assets.animation("""
+                        tall_mario_walk_left
+                    """),
+                    150,
+                    True)
+            else:
+                animation.run_image_animation(marioLevel,
+                    assets.animation("""
+                        mario_walk_left
+                    """),
+                    150,
+                    True)
 controller.left.on_event(ControllerButtonEvent.PRESSED, on_left_pressed)
 
 def changePostionSelector(selection: number):
@@ -615,7 +637,10 @@ def on_hit_wall3(sprite, location):
     """)):
         sprites.destroy(sprite)
 scene.on_hit_wall(SpriteKind.Coin, on_hit_wall3)
-    
+def on_overlap(sprite, otherSprite):
+    sprites.destroy(otherSprite)
+    info.change_score_by(10)
+sprites.on_overlap(SpriteKind.player, SpriteKind.Coin, on_overlap)
 boost: Sprite = None
 turtle: Sprite = None
 shroom: Sprite = None

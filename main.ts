@@ -11,26 +11,32 @@ namespace SpriteKind {
 }
 
 controller.right.onEvent(ControllerButtonEvent.Released, function on_right_released() {
-    animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
-    if (tall) {
-        marioLevel.setImage(assets.image`tall_mario_right0`)
-    } else {
-        marioLevel.setImage(assets.image`
-            mario_right
-        `)
+    if (level != 0) {
+        animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
+        if (tall) {
+            marioLevel.setImage(assets.image`tall_mario_right0`)
+        } else {
+            marioLevel.setImage(assets.image`
+                mario_right
+            `)
+        }
+        
     }
     
 })
 controller.left.onEvent(ControllerButtonEvent.Released, function on_left_released() {
-    animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
-    if (tall) {
-        marioLevel.setImage(assets.image`
-            tall_mario_left
-        `)
-    } else {
-        marioLevel.setImage(assets.image`
-            mario_left
-        `)
+    if (level != 0) {
+        animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
+        if (tall) {
+            marioLevel.setImage(assets.image`
+                tall_mario_left
+            `)
+        } else {
+            marioLevel.setImage(assets.image`
+                mario_left
+            `)
+        }
+        
     }
     
 })
@@ -120,6 +126,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shroom, function on_on_overlap(s
     
 })
 controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed() {
+    let coin: Sprite;
     
     if (level == 0) {
         if (selector == 0) {
@@ -130,6 +137,17 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed(
     } else if (marioLevel.tilemapLocation().column == 58 || marioLevel.tilemapLocation().column == 59 && marioLevel.tilemapLocation().row == 9 || marioLevel.tilemapLocation().row == 10) {
         tiles.setCurrentTilemap(tilemap`nivel`)
         tiles.placeOnTile(marioLevel, tiles.getTileLocation(2, 0))
+        for (let value of tiles.getTilesByType(assets.tile`
+                    coin_block
+                `)) {
+            coin = sprites.create(assets.image`
+                coin_sprite
+                `, SpriteKind.Coin)
+            tiles.placeOnTile(coin, value)
+            tiles.setTileAt(value, assets.tile`
+                    transparency16
+                `)
+        }
     }
     
 })
@@ -358,52 +376,69 @@ scene.onHitWall(SpriteKind.Shroom, function on_hit_wall2(sprite5: Sprite, locati
 })
 controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_pressed() {
     
-    facingRight = 1
-    if (marioLevel.vy == 0) {
-        if (tall) {
-            animation.runImageAnimation(marioLevel, assets.animation`
-                                tall_mario_walk_right
-                            `, 150, true)
-        } else {
-            animation.runImageAnimation(marioLevel, assets.animation`
-                    mario_walk_right
-                `, 150, true)
+    if (level != 0) {
+        facingRight = 1
+        if (marioLevel.vy == 0) {
+            if (tall) {
+                animation.runImageAnimation(marioLevel, assets.animation`
+                                    tall_mario_walk_right
+                                `, 150, true)
+            } else {
+                animation.runImageAnimation(marioLevel, assets.animation`
+                        mario_walk_right
+                    `, 150, true)
+            }
+            
+        }
+        
+        if (marioLevel.tileKindAt(TileDirection.Right, assets.tile`tube_right_top0 `)) {
+            tiles.setCurrentTilemap(tilemap`level_1_0`)
+            tiles.placeOnTile(marioLevel, tiles.getTileLocation(166, 11))
         }
         
     }
     
-    if (marioLevel.tileKindAt(TileDirection.Right, assets.tile`tube_right_top0 `)) {
-        tiles.setCurrentTilemap(tilemap`level_1_0`)
-        tiles.placeOnTile(marioLevel, tiles.getTileLocation(166, 11))
-    }
-    
 })
 function deathMario() {
-    info.stopCountdown()
-    info.changeLifeBy(-1)
-    info.setScore(0)
-    info.changeCountdownBy(400 - info.countdown())
-    tiles.setCurrentTilemap(tilemap`level_1_0`)
-    sprites.destroyAllSpritesOfKind(SpriteKind.Shroom)
-    sprites.destroyAllSpritesOfKind(SpriteKind.Turtle)
-    sprites.destroyAllSpritesOfKind(SpriteKind.Shell)
-    let tall = 0
-    tiles.placeOnTile(marioLevel, tiles.getTileLocation(0, 13))
-    spawnEnemies()
+    
+    if (tall == 1) {
+        tall = 0
+        if (facingRight) {
+            marioLevel.setImage(assets.image`mario_right`)
+        } else {
+            marioLevel.setImage(assets.image`mario_left`)
+        }
+        
+    } else {
+        info.stopCountdown()
+        info.changeLifeBy(-1)
+        info.setScore(0)
+        info.changeCountdownBy(400 - info.countdown())
+        tiles.setCurrentTilemap(tilemap`level_1_0`)
+        tiles.placeOnTile(marioLevel, tiles.getTileLocation(0, 12))
+        sprites.destroyAllSpritesOfKind(SpriteKind.Shroom)
+        sprites.destroyAllSpritesOfKind(SpriteKind.Turtle)
+        sprites.destroyAllSpritesOfKind(SpriteKind.Shell)
+        spawnEnemies()
+    }
+    
 }
 
 controller.left.onEvent(ControllerButtonEvent.Pressed, function on_left_pressed() {
     
-    facingRight = 0
-    if (marioLevel.vy == 0) {
-        if (tall) {
-            animation.runImageAnimation(marioLevel, assets.animation`
-                    tall_mario_walk_left
-                `, 150, true)
-        } else {
-            animation.runImageAnimation(marioLevel, assets.animation`
-                    mario_walk_left
-                `, 150, true)
+    if (level == 1) {
+        facingRight = 0
+        if (marioLevel.vy == 0) {
+            if (tall) {
+                animation.runImageAnimation(marioLevel, assets.animation`
+                        tall_mario_walk_left
+                    `, 150, true)
+            } else {
+                animation.runImageAnimation(marioLevel, assets.animation`
+                        mario_walk_left
+                    `, 150, true)
+            }
+            
         }
         
     }
@@ -676,6 +711,10 @@ scene.onHitWall(SpriteKind.Coin, function on_hit_wall3(sprite: Sprite, location:
         sprites.destroy(sprite)
     }
     
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Coin, function on_overlap(sprite: Sprite, otherSprite: Sprite) {
+    sprites.destroy(otherSprite)
+    info.changeScoreBy(10)
 })
 let boost : Sprite = null
 let turtle : Sprite = null
