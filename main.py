@@ -116,9 +116,14 @@ sprites.on_overlap(SpriteKind.player, SpriteKind.Shroom, on_on_overlap)
 
 def on_down_pressed():
     global selector
-    if selector == 0:
-        selector = 1
-        changePostionSelector(selector)
+    if level == 0:
+        if selector == 0:
+            selector = 1
+            changePostionSelector(selector)
+    else:
+        if marioLevel.tilemap_location().column == 58 or marioLevel.tilemap_location().column == 59 and marioLevel.tilemap_location().row == 9 or marioLevel.tilemap_location().row == 10 :
+            tiles.set_current_tilemap(tilemap("""nivel"""))
+            tiles.place_on_tile(marioLevel, tiles.get_tile_location(2, 0))
 controller.down.on_event(ControllerButtonEvent.PRESSED, on_down_pressed)
 
 def buildCabecera():
@@ -350,6 +355,10 @@ def on_right_pressed():
                 """),
                 150,
                 True)
+    if marioLevel.tile_kind_at(TileDirection.RIGHT, assets.tile("""tube_right_top0 """)):
+        tiles.set_current_tilemap(tilemap("""level_1_0"""))
+        tiles.place_on_tile(marioLevel, tiles.get_tile_location(166, 11))              
+
 controller.right.on_event(ControllerButtonEvent.PRESSED, on_right_pressed)
 
 def deathMario():

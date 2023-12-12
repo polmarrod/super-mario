@@ -121,9 +121,15 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Shroom, function on_on_overlap(s
 })
 controller.down.onEvent(ControllerButtonEvent.Pressed, function on_down_pressed() {
     
-    if (selector == 0) {
-        selector = 1
-        changePostionSelector(selector)
+    if (level == 0) {
+        if (selector == 0) {
+            selector = 1
+            changePostionSelector(selector)
+        }
+        
+    } else if (marioLevel.tilemapLocation().column == 58 || marioLevel.tilemapLocation().column == 59 && marioLevel.tilemapLocation().row == 9 || marioLevel.tilemapLocation().row == 10) {
+        tiles.setCurrentTilemap(tilemap`nivel`)
+        tiles.placeOnTile(marioLevel, tiles.getTileLocation(2, 0))
     }
     
 })
@@ -364,6 +370,11 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function on_right_presse
                 `, 150, true)
         }
         
+    }
+    
+    if (marioLevel.tileKindAt(TileDirection.Right, assets.tile`tube_right_top0 `)) {
+        tiles.setCurrentTilemap(tilemap`level_1_0`)
+        tiles.placeOnTile(marioLevel, tiles.getTileLocation(166, 11))
     }
     
 })
