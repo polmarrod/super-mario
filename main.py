@@ -13,9 +13,7 @@ class SpriteKind:
 def on_right_released():
     animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
     if tall:
-        marioLevel.set_image(assets.image("""
-            tall_mario_right0
-        """))
+        marioLevel.set_image(assets.image("""tall_mario_right0"""))
     else:
         marioLevel.set_image(assets.image("""
             mario_right
