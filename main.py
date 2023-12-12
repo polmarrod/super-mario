@@ -43,22 +43,14 @@ def jumpAnimation():
     animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
     if tall:
         if facingRight:
-            marioLevel.set_image(assets.image("""
-                tall_mario_jump_right
-            """))
+            marioLevel.set_image(assets.image("""tall_mario_jump_right"""))
         else:
-            marioLevel.set_image(assets.image("""
-                tall_mario_jump_left
-            """))
+            marioLevel.set_image(assets.image("""tall_mario_jump_left"""))
     else:
         if facingRight:
-            marioLevel.set_image(assets.image("""
-                jump_right
-            """))
+            marioLevel.set_image(assets.image("""jump_right"""))
         else:
-            marioLevel.set_image(assets.image("""
-                jump_left
-            """))
+            marioLevel.set_image(assets.image("""jump_left"""))
 def initializeMenu():
     global backgroundmenu, mario, title_onep, title_twop, selector_ig, selector, spriteCoinBrillante, spriteCoinOscura, listCoins, list2
     backgroundmenu = sprites.create(assets.image("""
@@ -329,6 +321,9 @@ def startGame():
     info.set_life(3)
     info.set_score(0)
     info.start_countdown(400)
+    setPrizeBlocks()
+
+def setPrizeBlocks():
     for value in tiles.get_tiles_by_type(assets.tile("""
         prize_block
     """)):
@@ -336,6 +331,19 @@ def startGame():
             prize_block_0
         """), SpriteKind.Prize)
         tiles.place_on_tile(prize, value)
+        animation.run_image_animation(prize,
+            assets.animation("""
+                prize_block_anim
+            """),
+            200,
+            True)
+    for value2 in tiles.get_tiles_by_type(assets.tile("""
+        prize_block_boost
+    """)):
+        prize = sprites.create(assets.image("""
+            prize_block_0
+        """), SpriteKind.Prize)
+        tiles.place_on_tile(prize, value2)
         animation.run_image_animation(prize,
             assets.animation("""
                 prize_block_anim
@@ -405,6 +413,7 @@ def deathMario():
     info.set_score(0)
     info.change_countdown_by(400 - info.countdown())
     tiles.set_current_tilemap(tilemap("""level_1_0"""))
+    setPrizeBlocks()
     tiles.place_on_tile(marioLevel, tiles.get_tile_location(0, 12))
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
@@ -539,6 +548,7 @@ def spawnEnemies():
                 transparency16
             """))
             turtle.vx = -20
+            turtle.ay = 160
 
 def on_up_pressed():
     global selector
@@ -565,8 +575,11 @@ def destroyMenu():
     sprites.destroy_all_sprites_of_kind(SpriteKind.coinOne)
 
 def on_on_overlap3(sprite32, otherSprite3):
-    otherSprite3.vx = sprite32.x * 2
-    otherSprite3.set_bounce_on_wall(True)
+    if otherSprite3.vx == 0:
+        otherSprite3.vx = sprite32.vx * 2
+        otherSprite3.set_bounce_on_wall(True)
+    else:
+        actualizeHitMario()
 sprites.on_overlap(SpriteKind.player, SpriteKind.Shell, on_on_overlap3)
 
 def colocateCoin(mySprite: Sprite):
@@ -586,32 +599,35 @@ def on_on_update():
         spawnEnemies()
         for value in sprites.all_of_kind(SpriteKind.Prize):
             if marioLevel.tilemap_location().column == value.tilemap_location().column and marioLevel.tilemap_location().row == value.tilemap_location().row + 1:
-                coin = sprites.create(assets.image("""
-                    coin_sprite
-                """), SpriteKind.Coin)
-                tiles.place_on_tile(coin, value.tilemap_location())
-                coin.vy = -200
-                coin.ay = 400
-                info.change_score_by(10)
-                animation.stop_animation(animation.AnimationTypes.ALL, value)
+                if tiles.tile_at_location_equals(value.tilemap_location(),
+                    assets.tile("""
+                        prize_block
+                    """)):
+                    coin = sprites.create(assets.image("""
+                        coin_sprite
+                    """), SpriteKind.Coin)
+                    tiles.place_on_tile(coin, value.tilemap_location())
+                    coin.vy = -200
+                    coin.ay = 400
+                    info.change_score_by(10)
+                    animation.stop_animation(animation.AnimationTypes.ALL, value)
+                elif tiles.tile_at_location_equals(value.tilemap_location(),
+                    assets.tile("""
+                        prize_block_boost
+                    """)):
+                    boost = sprites.create(assets.image("""
+                        boost_sprite
+                    """), SpriteKind.food)
+                    tiles.place_on_tile(boost,
+                        tiles.get_tile_location(value.tilemap_location().column,
+                            value.tilemap_location().row - 1))
+                    boost.vx = 50
+                    boost.ay = 160
                 sprites.destroy(value)
-                tiles.set_tile_at(value.tilemap_location(), assets.tile("""
-                    myTile1
-                """))
-        for value222 in tiles.get_tiles_by_type(assets.tile("""
-            prize_block_boost
-        """)):
-            if marioLevel.tilemap_location().column == value222.column and marioLevel.tilemap_location().row == value222.row + 1:
-                boost = sprites.create(assets.image("""
-                    boost_sprite
-                """), SpriteKind.food)
-                tiles.place_on_tile(boost,
-                    tiles.get_tile_location(value222.column, value222.row - 1))
-                boost.vx = 50
-                boost.ay = 160
-                tiles.set_tile_at(value222, assets.tile("""
-                    myTile1
-                """))
+                tiles.set_tile_at(value.tilemap_location(),
+                    assets.tile("""
+                        myTile1
+                    """))
 game.on_update(on_on_update)
 def on_on_update2():
     if level != 0:
@@ -635,6 +651,53 @@ def on_on_update2():
                     mario_left
                 """))
 game.on_update(on_on_update2)
+def on_on_update3():
+    if level != 0:
+        if marioLevel.tilemap_location().column == 199:
+            tall = 0
+            controller.move_sprite(marioLevel, 0, 0)
+            animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
+            marioLevel.set_velocity(0, 70)
+            if tall:
+                marioLevel.set_image(assets.image("""
+                    tall_mario_jump_right
+                """))
+            else:
+                marioLevel.set_image(assets.image("""
+                    jump_right
+                """))
+            if marioLevel.tile_kind_at(TileDirection.BOTTOM, assets.tile("""
+                end_block
+            """)):
+                if tall:
+                    marioLevel.set_image(assets.image("""tall_mario_jump_left"""))
+                    tiles.place_on_tile(marioLevel,
+                        tiles.get_tile_location(marioLevel.tilemap_location().column + 1,
+                                marioLevel.tilemap_location().row))
+                    marioLevel.set_velocity(100, 70)
+                    animation.run_image_animation(marioLevel,
+                        assets.animation("""
+                            tall_mario_walk_right
+                        """),
+                        150,
+                        True)
+                else:
+                    marioLevel.set_image(assets.image("""
+                        jump_left
+                    """))
+                    tiles.place_on_tile(marioLevel,
+                        tiles.get_tile_location(marioLevel.tilemap_location().column + 1,
+                            marioLevel.tilemap_location().row))
+                    marioLevel.set_velocity(100, 70)
+                    animation.run_image_animation(marioLevel,
+                        assets.animation("""
+                            mario_walk_right
+                        """),
+                        150,
+                        True)                    
+        if marioLevel.tilemap_location().column == 205:
+            game.game_over(True)
+game.on_update(on_on_update3)
 def checkFall():
     global tall
     if marioLevel.tilemap_location().row == 15:

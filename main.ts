@@ -48,23 +48,15 @@ function jumpAnimation() {
     animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
     if (tall) {
         if (facingRight) {
-            marioLevel.setImage(assets.image`
-                tall_mario_jump_right
-            `)
+            marioLevel.setImage(assets.image`tall_mario_jump_right`)
         } else {
-            marioLevel.setImage(assets.image`
-                tall_mario_jump_left
-            `)
+            marioLevel.setImage(assets.image`tall_mario_jump_left`)
         }
         
     } else if (facingRight) {
-        marioLevel.setImage(assets.image`
-                jump_right
-            `)
+        marioLevel.setImage(assets.image`jump_right`)
     } else {
-        marioLevel.setImage(assets.image`
-                jump_left
-            `)
+        marioLevel.setImage(assets.image`jump_left`)
     }
     
 }
@@ -211,7 +203,6 @@ function on_hit_wall(sprite6: Sprite, location2: tiles.Location) {
 
 scene.onHitWall(SpriteKind.Food, on_hit_wall)
 function startGame() {
-    let prize: Sprite;
     
     scene.setBackgroundImage(img`
         9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999
@@ -353,6 +344,11 @@ function startGame() {
     info.setLife(3)
     info.setScore(0)
     info.startCountdown(400)
+    setPrizeBlocks()
+}
+
+function setPrizeBlocks() {
+    let prize: Sprite;
     for (let value of tiles.getTilesByType(assets.tile`
         prize_block
     `)) {
@@ -360,6 +356,17 @@ function startGame() {
             prize_block_0
         `, SpriteKind.Prize)
         tiles.placeOnTile(prize, value)
+        animation.runImageAnimation(prize, assets.animation`
+                prize_block_anim
+            `, 200, true)
+    }
+    for (let value2 of tiles.getTilesByType(assets.tile`
+        prize_block_boost
+    `)) {
+        prize = sprites.create(assets.image`
+            prize_block_0
+        `, SpriteKind.Prize)
+        tiles.placeOnTile(prize, value2)
         animation.runImageAnimation(prize, assets.animation`
                 prize_block_anim
             `, 200, true)
@@ -435,6 +442,7 @@ function deathMario() {
     info.setScore(0)
     info.changeCountdownBy(400 - info.countdown())
     tiles.setCurrentTilemap(tilemap`level_1_0`)
+    setPrizeBlocks()
     tiles.placeOnTile(marioLevel, tiles.getTileLocation(0, 12))
     sprites.destroyAllSpritesOfKind(SpriteKind.Shroom)
     sprites.destroyAllSpritesOfKind(SpriteKind.Turtle)
@@ -575,6 +583,7 @@ function spawnEnemies() {
                 transparency16
             `)
             turtle.vx = -20
+            turtle.ay = 160
         }
         
     }
@@ -610,8 +619,13 @@ function destroyMenu() {
 }
 
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Shell, function on_on_overlap3(sprite32: Sprite, otherSprite3: Sprite) {
-    otherSprite3.vx = sprite32.x * 2
-    otherSprite3.setBounceOnWall(true)
+    if (otherSprite3.vx == 0) {
+        otherSprite3.vx = sprite32.vx * 2
+        otherSprite3.setBounceOnWall(true)
+    } else {
+        actualizeHitMario()
+    }
+    
 })
 function colocateCoin(mySprite: Sprite) {
     mySprite.setPosition(65, 9)
@@ -630,34 +644,32 @@ game.onUpdate(function on_on_update() {
         spawnEnemies()
         for (let value of sprites.allOfKind(SpriteKind.Prize)) {
             if (marioLevel.tilemapLocation().column == value.tilemapLocation().column && marioLevel.tilemapLocation().row == value.tilemapLocation().row + 1) {
-                coin = sprites.create(assets.image`
-                    coin_sprite
-                `, SpriteKind.Coin)
-                tiles.placeOnTile(coin, value.tilemapLocation())
-                coin.vy = -200
-                coin.ay = 400
-                info.changeScoreBy(10)
-                animation.stopAnimation(animation.AnimationTypes.All, value)
+                if (tiles.tileAtLocationEquals(value.tilemapLocation(), assets.tile`
+                        prize_block
+                    `)) {
+                    coin = sprites.create(assets.image`
+                        coin_sprite
+                    `, SpriteKind.Coin)
+                    tiles.placeOnTile(coin, value.tilemapLocation())
+                    coin.vy = -200
+                    coin.ay = 400
+                    info.changeScoreBy(10)
+                    animation.stopAnimation(animation.AnimationTypes.All, value)
+                } else if (tiles.tileAtLocationEquals(value.tilemapLocation(), assets.tile`
+                        prize_block_boost
+                    `)) {
+                    boost = sprites.create(assets.image`
+                        boost_sprite
+                    `, SpriteKind.Food)
+                    tiles.placeOnTile(boost, tiles.getTileLocation(value.tilemapLocation().column, value.tilemapLocation().row - 1))
+                    boost.vx = 50
+                    boost.ay = 160
+                }
+                
                 sprites.destroy(value)
                 tiles.setTileAt(value.tilemapLocation(), assets.tile`
-                    myTile1
-                `)
-            }
-            
-        }
-        for (let value222 of tiles.getTilesByType(assets.tile`
-            prize_block_boost
-        `)) {
-            if (marioLevel.tilemapLocation().column == value222.column && marioLevel.tilemapLocation().row == value222.row + 1) {
-                boost = sprites.create(assets.image`
-                    boost_sprite
-                `, SpriteKind.Food)
-                tiles.placeOnTile(boost, tiles.getTileLocation(value222.column, value222.row - 1))
-                boost.vx = 50
-                boost.ay = 160
-                tiles.setTileAt(value222, assets.tile`
-                    myTile1
-                `)
+                        myTile1
+                    `)
             }
             
         }
@@ -689,6 +701,56 @@ game.onUpdate(function on_on_update2() {
                 `)
             }
             
+        }
+        
+    }
+    
+})
+game.onUpdate(function on_on_update3() {
+    let tall: number;
+    if (level != 0) {
+        if (marioLevel.tilemapLocation().column == 199) {
+            tall = 0
+            controller.moveSprite(marioLevel, 0, 0)
+            animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
+            marioLevel.setVelocity(0, 70)
+            if (tall) {
+                marioLevel.setImage(assets.image`
+                    tall_mario_jump_right
+                `)
+            } else {
+                marioLevel.setImage(assets.image`
+                    jump_right
+                `)
+            }
+            
+            if (marioLevel.tileKindAt(TileDirection.Bottom, assets.tile`
+                end_block
+            `)) {
+                if (tall) {
+                    marioLevel.setImage(assets.image`tall_mario_jump_left`)
+                    tiles.placeOnTile(marioLevel, tiles.getTileLocation(marioLevel.tilemapLocation().column + 1, marioLevel.tilemapLocation().row))
+                    marioLevel.setVelocity(100, 70)
+                    animation.runImageAnimation(marioLevel, assets.animation`
+                            tall_mario_walk_right
+                        `, 150, true)
+                } else {
+                    marioLevel.setImage(assets.image`
+                        jump_left
+                    `)
+                    tiles.placeOnTile(marioLevel, tiles.getTileLocation(marioLevel.tilemapLocation().column + 1, marioLevel.tilemapLocation().row))
+                    marioLevel.setVelocity(100, 70)
+                    animation.runImageAnimation(marioLevel, assets.animation`
+                            mario_walk_right
+                        `, 150, true)
+                }
+                
+            }
+            
+        }
+        
+        if (marioLevel.tilemapLocation().column == 205) {
+            game.gameOver(true)
         }
         
     }
