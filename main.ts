@@ -6,6 +6,8 @@ namespace SpriteKind {
     export const Shroom = SpriteKind.create()
     export const Turtle = SpriteKind.create()
     export const Shell = SpriteKind.create()
+    export const Coin = SpriteKind.create()
+    export const Prize = SpriteKind.create()
 }
 
 controller.right.onEvent(ControllerButtonEvent.Released, function on_right_released() {
@@ -543,6 +545,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function on_on_overlap4(sp
     tall = 1
 })
 game.onUpdate(function on_on_update() {
+    let coin: Sprite;
     
     if (level != 0) {
         spawnEnemies()
@@ -550,6 +553,12 @@ game.onUpdate(function on_on_update() {
             prize_block
         `)) {
             if (marioLevel.tilemapLocation().column == value22.column && marioLevel.tilemapLocation().row == value22.row + 1) {
+                coin = sprites.create(assets.image`
+                        coin_sprite
+                    `, SpriteKind.Coin)
+                tiles.placeOnTile(coin, value22)
+                coin.vy = -200
+                coin.ay = 400
                 info.changeScoreBy(10)
                 tiles.setTileAt(value22, assets.tile`
                     myTile1
@@ -637,6 +646,14 @@ function checkFall() {
     }
 }
 
+scene.onHitWall(SpriteKind.Coin, function on_hit_wall3(sprite: Sprite, location: tiles.Location) {
+    if (sprite.tileKindAt(TileDirection.Bottom, assets.tile`
+        myTile1
+    `)) {
+        sprites.destroy(sprite)
+    }
+    
+})
 let boost : Sprite = null
 let turtle : Sprite = null
 let shroom : Sprite = null

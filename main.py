@@ -7,6 +7,8 @@ class SpriteKind:
     Shroom = SpriteKind.create()
     Turtle = SpriteKind.create()
     Shell = SpriteKind.create()
+    Coin = SpriteKind.create()
+    Prize = SpriteKind.create()
 
 def on_right_released():
     animation.stop_animation(animation.AnimationTypes.ALL, marioLevel)
@@ -520,8 +522,16 @@ def on_on_update():
         for value22 in tiles.get_tiles_by_type(assets.tile("""
             prize_block
         """)):
+            
             if marioLevel.tilemap_location().column == value22.column and marioLevel.tilemap_location().row == value22.row + 1:
+                coin = sprites.create(assets.image("""
+                        coin_sprite
+                    """), SpriteKind.Coin)
+                tiles.place_on_tile(coin, value22)
+                coin.vy = -200
+                coin.ay = 400
                 info.change_score_by(10)
+                
                 tiles.set_tile_at(value22, assets.tile("""
                     myTile1
                 """))
@@ -577,6 +587,12 @@ def checkFall():
     for value4 in sprites.all_of_kind(SpriteKind.Shell):
         if value4.tilemap_location().row == 15:
             sprites.destroy(value4)
+def on_hit_wall3(sprite, location):
+    if sprite.tile_kind_at(TileDirection.BOTTOM, assets.tile("""
+        myTile1
+    """)):
+        sprites.destroy(sprite)
+scene.on_hit_wall(SpriteKind.Coin, on_hit_wall3)
     
 boost: Sprite = None
 turtle: Sprite = None

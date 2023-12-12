@@ -1,4 +1,4 @@
-// Código generado automáticamente. No editar.
+// Auto-generated code. Do not edit.
 namespace myImages {
 
     helpers._registerFactory("image", function(name: string) {
@@ -805,6 +805,82 @@ eeee22..ee222eee
 ..............ee
 ...............e
 `;
+            case "image31":
+            case "coin_sprite":return img`
+. . . . . 4 4 4 4 f f . . . . . 
+. . . . 4 4 4 4 4 4 f f . . . . 
+. . . . 4 4 4 4 4 4 f f . . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . 4 4 4 4 4 f 4 4 f f . . . 
+. . . . 4 4 f f 4 4 f f . . . . 
+. . . . 4 4 4 4 4 4 f f . . . . 
+. . . . . 4 4 4 4 f f . . . . . 
+`;
+            case "image33":
+            case "prize_block_1":return img`
+. 4 4 4 4 4 4 4 4 4 4 4 4 4 4 . 
+4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 f 
+4 4 f 4 4 4 4 4 4 4 4 4 4 f 4 f 
+4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 f 
+4 4 4 4 4 4 f f f 4 4 4 4 4 4 f 
+4 4 4 4 4 4 f 4 4 4 4 f 4 4 4 f 
+4 4 4 4 4 4 f 4 4 4 4 f 4 4 4 f 
+4 4 4 4 4 f f 4 4 4 4 f 4 4 4 f 
+4 4 4 4 4 4 4 4 4 f f f 4 4 4 f 
+4 4 4 4 4 4 4 4 4 f 4 4 4 4 4 f 
+4 4 4 4 4 4 4 4 f f 4 4 4 4 4 f 
+4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 f 
+4 4 4 4 4 4 4 4 4 f 4 4 4 4 4 f 
+4 4 f 4 4 4 4 4 f f 4 4 4 f 4 f 
+4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 f 
+f f f f f f f f f f f f f f f f 
+`;
+            case "image32":
+            case "prize_block_0":return img`
+. 4 4 4 4 4 4 4 4 4 4 4 4 4 4 . 
+4 d d d d d d d d d d d d d d f 
+4 d f d d d d d d d d d d f d f 
+4 d d d d 4 4 4 4 4 d d d d d f 
+4 d d d 4 4 f f f 4 4 d d d d f 
+4 d d d 4 4 f d d 4 4 f d d d f 
+4 d d d 4 4 f d d 4 4 f d d d f 
+4 d d d d f f d 4 4 4 f d d d f 
+4 d d d d d d 4 4 f f f d d d f 
+4 d d d d d d 4 4 f d d d d d f 
+4 d d d d d d d f f d d d d d f 
+4 d d d d d d 4 4 d d d d d d f 
+4 d d d d d d 4 4 f d d d d d f 
+4 d f d d d d d f f d d d f d f 
+4 d d d d d d d d d d d d d d f 
+f f f f f f f f f f f f f f f f 
+`;
+            case "image34":
+            case "prize_block_2":return img`
+. 4 4 4 4 4 4 4 4 4 4 4 4 4 4 . 
+4 e e e e e e e e e e e e e e f 
+4 e f e e e e e e e e e e f e f 
+4 e e e e 4 4 4 4 4 e e e e e f 
+4 e e e 4 4 f f f 4 4 e e e e f 
+4 e e e 4 4 f e e 4 4 f e e e f 
+4 e e e 4 4 f e e 4 4 f e e e f 
+4 e e e e f f e 4 4 4 f e e e f 
+4 e e e e e e 4 4 f f f e e e f 
+4 e e e e e e 4 4 f e e e e e f 
+4 e e e e e e e f f e e e e e f 
+4 e e e e e e 4 4 e e e e e e f 
+4 e e e e e e 4 4 f e e e e e f 
+4 e f e e e e e f f e e e f e f 
+4 e e e e e e e e e e e e e e f 
+f f f f f f f f f f f f f f f f 
+`;
         }
         return null;
     })
@@ -1191,6 +1267,59 @@ eeeee...2222eeee
 ............eee.
 ...........eee..
 `];
+            case "prize_block_anim":
+            case "anim6":return [img`
+. 4 4 4 4 4 4 4 4 4 4 4 4 4 4 . 
+4 d d d d d d d d d d d d d d f 
+4 d f d d d d d d d d d d f d f 
+4 d d d d 4 4 4 4 4 d d d d d f 
+4 d d d 4 4 f f f 4 4 d d d d f 
+4 d d d 4 4 f d d 4 4 f d d d f 
+4 d d d 4 4 f d d 4 4 f d d d f 
+4 d d d d f f d 4 4 4 f d d d f 
+4 d d d d d d 4 4 f f f d d d f 
+4 d d d d d d 4 4 f d d d d d f 
+4 d d d d d d d f f d d d d d f 
+4 d d d d d d 4 4 d d d d d d f 
+4 d d d d d d 4 4 f d d d d d f 
+4 d f d d d d d f f d d d f d f 
+4 d d d d d d d d d d d d d d f 
+f f f f f f f f f f f f f f f f 
+`, img`
+. 4 4 4 4 4 4 4 4 4 4 4 4 4 4 . 
+4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 f 
+4 4 f 4 4 4 4 4 4 4 4 4 4 f 4 f 
+4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 f 
+4 4 4 4 4 4 f f f 4 4 4 4 4 4 f 
+4 4 4 4 4 4 f 4 4 4 4 f 4 4 4 f 
+4 4 4 4 4 4 f 4 4 4 4 f 4 4 4 f 
+4 4 4 4 4 f f 4 4 4 4 f 4 4 4 f 
+4 4 4 4 4 4 4 4 4 f f f 4 4 4 f 
+4 4 4 4 4 4 4 4 4 f 4 4 4 4 4 f 
+4 4 4 4 4 4 4 4 f f 4 4 4 4 4 f 
+4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 f 
+4 4 4 4 4 4 4 4 4 f 4 4 4 4 4 f 
+4 4 f 4 4 4 4 4 f f 4 4 4 f 4 f 
+4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 f 
+f f f f f f f f f f f f f f f f 
+`, img`
+. 4 4 4 4 4 4 4 4 4 4 4 4 4 4 . 
+4 e e e e e e e e e e e e e e f 
+4 e f e e e e e e e e e e f e f 
+4 e e e e 4 4 4 4 4 e e e e e f 
+4 e e e 4 4 f f f 4 4 e e e e f 
+4 e e e 4 4 f e e 4 4 f e e e f 
+4 e e e 4 4 f e e 4 4 f e e e f 
+4 e e e e f f e 4 4 4 f e e e f 
+4 e e e e e e 4 4 f f f e e e f 
+4 e e e e e e 4 4 f e e e e e f 
+4 e e e e e e e f f e e e e e f 
+4 e e e e e e 4 4 e e e e e e f 
+4 e e e e e e 4 4 f e e e e e f 
+4 e f e e e e e f f e e e f e f 
+4 e e e e e e e e e e e e e e f 
+f f f f f f f f f f f f f f f f 
+`];
         }
         return null;
     })
@@ -1203,4 +1332,4 @@ eeeee...2222eeee
     })
 
 }
-// Código generado automáticamente. No editar.
+// Auto-generated code. Do not edit.
