@@ -13,9 +13,7 @@ namespace SpriteKind {
 controller.right.onEvent(ControllerButtonEvent.Released, function on_right_released() {
     animation.stopAnimation(animation.AnimationTypes.All, marioLevel)
     if (tall) {
-        marioLevel.setImage(assets.image`
-            tall_mario_right0
-        `)
+        marioLevel.setImage(assets.image`tall_mario_right0`)
     } else {
         marioLevel.setImage(assets.image`
             mario_right
