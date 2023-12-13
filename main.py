@@ -418,6 +418,7 @@ def deathMario():
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shroom)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Turtle)
     sprites.destroy_all_sprites_of_kind(SpriteKind.Shell)
+    marioLevel.set_image(assets.image("""mario_right"""))
     marioLevel.vy = 0
     marioLevel.ay = 350
     controller.move_sprite(marioLevel,100,0)

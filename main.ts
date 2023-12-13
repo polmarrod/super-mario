@@ -447,6 +447,7 @@ function deathMario() {
     sprites.destroyAllSpritesOfKind(SpriteKind.Shroom)
     sprites.destroyAllSpritesOfKind(SpriteKind.Turtle)
     sprites.destroyAllSpritesOfKind(SpriteKind.Shell)
+    marioLevel.setImage(assets.image`mario_right`)
     marioLevel.vy = 0
     marioLevel.ay = 350
     controller.moveSprite(marioLevel, 100, 0)
